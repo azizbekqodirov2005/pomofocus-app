@@ -6,6 +6,11 @@ export const ru: Dictionary = {
     tagline: 'Работайте интервалами',
     skipToContent: 'Перейти к основному содержимому',
   },
+  nav: {
+    timer: 'Таймер',
+    tasks: 'Задачи',
+    stats: 'Итоги',
+  },
   session: {
     focus: 'Фокус',
     shortBreak: 'Короткий перерыв',

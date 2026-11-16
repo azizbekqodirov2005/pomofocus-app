@@ -19,7 +19,7 @@ export function Header({ onOpenSettings, onOpenShortcuts }: HeaderProps) {
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-3 px-4 sm:px-6">
         <Brand name={t('app.name')} tagline={t('app.tagline')} />
 
-        <nav aria-label={t('settings.title')} className="flex items-center gap-0.5">
+        <nav aria-label={t('settings.title')} className="flex shrink-0 items-center gap-0.5">
           <LanguageSelect />
           <IconButton
             label={resolved === 'dark' ? t('theme.toLight') : t('theme.toDark')}

@@ -50,9 +50,9 @@ function MobileNav({
   const items = useMemo(
     () =>
       [
-        { id: 'timer' as const, label: t('app.name'), icon: <ClockIcon width={16} height={16} /> },
-        { id: 'tasks' as const, label: t('tasks.title'), icon: <ListIcon width={16} height={16} /> },
-        { id: 'stats' as const, label: t('stats.title'), icon: <ChartIcon width={16} height={16} /> },
+        { id: 'timer' as const, label: t('nav.timer'), icon: <ClockIcon width={16} height={16} /> },
+        { id: 'tasks' as const, label: t('nav.tasks'), icon: <ListIcon width={16} height={16} /> },
+        { id: 'stats' as const, label: t('nav.stats'), icon: <ChartIcon width={16} height={16} /> },
       ],
     [t],
   );
@@ -72,7 +72,8 @@ function MobileNav({
               aria-current={selected ? 'page' : undefined}
               onClick={() => onChange(item.id)}
               className={cn(
-                'inline-flex flex-1 items-center justify-center gap-1.5 border-b-2 px-2 py-3 text-[13px] font-medium transition-colors',
+                'inline-flex flex-1 items-center justify-center gap-1.5 border-b-2 px-1.5 py-3',
+                'text-[13px] font-medium whitespace-nowrap transition-colors',
                 selected
                   ? 'border-accent text-text'
                   : 'border-transparent text-muted hover:text-text',

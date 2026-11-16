@@ -42,3 +42,5 @@ node_modules/.tmp
 
 # Netlify
 .netlify
+qa/app.test.mjs
+qa/shots/

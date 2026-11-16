@@ -23,11 +23,13 @@ export function BrandMark({ className }: { className?: string }) {
 
 export function Brand({ name, tagline }: { name: string; tagline?: string }) {
   return (
-    <div className="flex items-center gap-2.5">
+    <div className="flex min-w-0 items-center gap-2.5">
       <BrandMark className="text-accent" />
-      <div className="leading-tight">
-        <p className="text-[15px] font-semibold tracking-tight">{name}</p>
-        {tagline ? <p className="text-[12px] text-faint">{tagline}</p> : null}
+      <div className="min-w-0 leading-tight">
+        <p className="truncate text-[15px] font-semibold tracking-tight">{name}</p>
+        {tagline ? (
+          <p className="hidden truncate text-[12px] text-faint sm:block">{tagline}</p>
+        ) : null}
       </div>
     </div>
   );

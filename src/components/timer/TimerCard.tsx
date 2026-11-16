@@ -55,9 +55,12 @@ export function TimerCard() {
   return (
     <section
       aria-label={t(SESSION_LABEL[state.type])}
-      className="flex flex-col items-center rounded-lg border border-border-base bg-surface px-5 py-8 shadow-subtle sm:px-10 sm:py-12"
+      className="flex flex-col items-center overflow-hidden rounded-lg border border-border-base bg-surface px-4 py-8 shadow-subtle sm:px-10 sm:py-12"
     >
-      <SessionTabs current={state.type} onSelect={handleSelect} />
+      {/* Full-width segmented control on phones, compact pill from sm upward. */}
+      <div className="flex w-full justify-center">
+        <SessionTabs current={state.type} onSelect={handleSelect} />
+      </div>
 
       <p className="mt-7 text-[12px] font-medium tracking-[0.14em] text-muted uppercase">
         {t(SESSION_LABEL[state.type])}

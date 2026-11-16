@@ -4,6 +4,11 @@ export const uz = {
     tagline: 'Pomodoro texnikasi bilan ishlang',
     skipToContent: 'Asosiy qismga o‘tish',
   },
+  nav: {
+    timer: 'Taymer',
+    tasks: 'Vazifalar',
+    stats: 'Natija',
+  },
   session: {
     focus: 'Fokus',
     shortBreak: 'Qisqa tanaffus',

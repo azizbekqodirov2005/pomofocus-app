@@ -6,6 +6,11 @@ export const en: Dictionary = {
     tagline: 'Work in focused intervals',
     skipToContent: 'Skip to main content',
   },
+  nav: {
+    timer: 'Timer',
+    tasks: 'Tasks',
+    stats: 'Stats',
+  },
   session: {
     focus: 'Focus',
     shortBreak: 'Short break',

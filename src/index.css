@@ -170,6 +170,14 @@
   }
 }
 
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 @utility tnum {
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum';

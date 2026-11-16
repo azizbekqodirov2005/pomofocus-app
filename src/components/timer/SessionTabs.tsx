@@ -22,7 +22,7 @@ export function SessionTabs({ current, onSelect }: SessionTabsProps) {
     <div
       role="tablist"
       aria-label={t('session.focus')}
-      className="inline-flex items-center gap-0.5 rounded-md border border-border-base bg-bg-subtle p-0.5"
+      className="grid w-full grid-cols-3 gap-0.5 rounded-md border border-border-base bg-bg-subtle p-0.5 sm:inline-flex sm:w-auto sm:items-center"
     >
       {ORDER.map((type) => {
         const selected = current === type;
@@ -34,7 +34,8 @@ export function SessionTabs({ current, onSelect }: SessionTabsProps) {
             aria-selected={selected}
             onClick={() => onSelect(type)}
             className={cn(
-              'rounded-sm px-3 py-1.5 text-[13px] font-medium whitespace-nowrap transition-colors duration-150',
+              'rounded-sm px-1.5 py-1.5 text-[11.5px] leading-tight font-medium transition-colors duration-150',
+              'sm:px-3 sm:text-[13px] sm:whitespace-nowrap',
               selected
                 ? 'bg-surface text-text shadow-subtle'
                 : 'text-muted hover:text-text',
