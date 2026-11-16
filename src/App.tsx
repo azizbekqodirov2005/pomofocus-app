@@ -102,8 +102,14 @@ function Workspace() {
 
   const dialogOpen = settingsOpen || shortcutsOpen;
 
+  // In Uzbek the focus session and the product share a name, so "Fokus — Fokus"
+  // would read as a mistake: collapse the two when they match.
+  const sessionLabel = t(SESSION_LABEL[state.type]);
+  const appName = t('app.name');
   useDocumentTitle(
-    `${formatClock(remainingMs)} · ${t(SESSION_LABEL[state.type])} — ${t('app.name')}`,
+    sessionLabel === appName
+      ? `${formatClock(remainingMs)} · ${appName}`
+      : `${formatClock(remainingMs)} · ${sessionLabel} — ${appName}`,
   );
 
   const handlers = useMemo(
