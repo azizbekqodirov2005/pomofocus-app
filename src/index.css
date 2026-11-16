@@ -1,0 +1,238 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter/wght.css';
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+   Two hand-tuned palettes (not inverted values): a warm paper-like light theme
+   and a neutral, low-glare dark theme. The accent colour is driven by the
+   active session type via [data-phase] so the whole UI shifts mood with it.
+   --------------------------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+
+  --bg: #faf9f7;
+  --bg-subtle: #f2f0ec;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --border: #e5e1da;
+  --border-strong: #d2ccc2;
+  --text: #1b1917;
+  --text-muted: #6e6860;
+  --text-faint: #9a948b;
+  --track: #e8e4dd;
+  --shadow: 0 1px 2px rgb(27 25 23 / 0.05), 0 8px 24px -12px rgb(27 25 23 / 0.12);
+  --shadow-sm: 0 1px 2px rgb(27 25 23 / 0.06);
+
+  --accent: #b0492c;
+  --accent-hover: #9b3f25;
+  --accent-tint: #fbeee9;
+  --accent-contrast: #ffffff;
+
+  --danger: #a32b2b;
+  --danger-tint: #fcecec;
+  --success: #1f6f5c;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #101013;
+  --bg-subtle: #15151a;
+  --surface: #17171c;
+  --surface-raised: #1d1d23;
+  --border: #272730;
+  --border-strong: #3a3a45;
+  --text: #f3f2f0;
+  --text-muted: #9d9a95;
+  --text-faint: #6f6c68;
+  --track: #26262e;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -16px rgb(0 0 0 / 0.6);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
+
+  --accent: #e3836a;
+  --accent-hover: #ee9077;
+  --accent-tint: #2a1c17;
+  --accent-contrast: #16100d;
+
+  --danger: #e0756f;
+  --danger-tint: #2b1718;
+  --success: #4fb398;
+}
+
+:root[data-phase='short'] {
+  --accent: #1f6f5c;
+  --accent-hover: #1a5f4f;
+  --accent-tint: #e8f3f0;
+}
+:root[data-phase='short'][data-theme='dark'] {
+  --accent: #4fb398;
+  --accent-hover: #63c2a8;
+  --accent-tint: #14241f;
+  --accent-contrast: #0c1714;
+}
+
+:root[data-phase='long'] {
+  --accent: #3f51a0;
+  --accent-hover: #35458c;
+  --accent-tint: #eceff8;
+}
+:root[data-phase='long'][data-theme='dark'] {
+  --accent: #8e9ce6;
+  --accent-hover: #a0acec;
+  --accent-tint: #1a1d2e;
+  --accent-contrast: #0e1019;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border-base: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-muted: var(--text-muted);
+  --color-faint: var(--text-faint);
+  --color-track: var(--track);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-tint: var(--accent-tint);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-danger: var(--danger);
+  --color-danger-tint: var(--danger-tint);
+  --color-success: var(--success);
+
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --shadow-card: var(--shadow);
+  --shadow-subtle: var(--shadow-sm);
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv11', 'ss01';
+    font-synthesis-weight: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 220ms ease, color 220ms ease;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  input[type='number'] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  ::selection {
+    background: var(--accent);
+    color: var(--accent-contrast);
+  }
+}
+
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+}
+
+/* The clock face: large, tight, optically balanced. */
+@utility clock-digits {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum';
+  letter-spacing: -0.045em;
+  font-weight: 300;
+  line-height: 0.95;
+}
+
+@keyframes fokus-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fokus-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fokus-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@utility animate-rise {
+  animation: fokus-rise 260ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@utility animate-toast {
+  animation: fokus-toast-in 200ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@utility animate-fade {
+  animation: fokus-fade 180ms ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
