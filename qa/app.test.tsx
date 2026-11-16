@@ -240,21 +240,28 @@ check('auto-start off by default — break is idle', text().includes('Boshlashga
 check('session history recorded', text().includes('Hisobot yozish'));
 
 console.log('\n6. Language switching (instant, persisted)');
-const select = document.querySelector<HTMLSelectElement>('select');
-await act(async () => {
-  select!.value = 'ru';
-  select!.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
-  await wait();
-});
+const switchLanguage = async (label: string) => {
+  await act(async () => {
+    const trigger = document.querySelector<HTMLElement>('[aria-haspopup="menu"]');
+    trigger!.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
+    await wait();
+  });
+  await act(async () => {
+    const item = Array.from(
+      document.querySelectorAll<HTMLElement>('[role="menuitemradio"]'),
+    ).find((node) => node.textContent?.includes(label));
+    item!.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
+    await wait();
+  });
+};
+check('language menu is not a native select', document.querySelector('select') === null);
+await switchLanguage('Русский');
 check('Russian interface', text().includes('Задачи') && text().includes('Короткий перерыв'));
 check('html lang updated', document.documentElement.lang === 'ru');
 check('language persisted', dom.window.localStorage.getItem('fokus.language') === '"ru"');
-await act(async () => {
-  select!.value = 'en';
-  select!.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
-  await wait();
-});
+await switchLanguage('English');
 check('English interface', text().includes('Tasks') && text().includes('Short break'));
+check('menu closes after choosing', document.querySelector('[role="menuitemradio"]') === null);
 
 console.log('\n7. Theme toggle (persisted)');
 const themeBtn = byLabel('Switch to dark theme');

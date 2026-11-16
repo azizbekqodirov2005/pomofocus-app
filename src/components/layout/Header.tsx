@@ -3,7 +3,7 @@ import { InstallIcon, KeyboardIcon, MoonIcon, SettingsIcon, SunIcon } from '@/co
 import { useTheme } from '@/state/ThemeProvider';
 import { useI18n } from '@/i18n/useI18n';
 import { Brand } from './Brand';
-import { LanguageSelect } from './LanguageSelect';
+import { LanguageMenu } from './LanguageMenu';
 
 interface HeaderProps {
   onOpenSettings: () => void;
@@ -31,7 +31,7 @@ export function Header({ onOpenSettings, onOpenShortcuts, onInstall }: HeaderPro
               <InstallIcon />
             </IconButton>
           ) : null}
-          <LanguageSelect />
+          <LanguageMenu />
           <IconButton
             label={resolved === 'dark' ? t('theme.toLight') : t('theme.toDark')}
             onClick={toggle}
