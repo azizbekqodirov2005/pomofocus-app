@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useStats } from '@/state/StatsProvider';
 import { useSettings } from '@/state/SettingsProvider';
 import { useToast } from '@/state/ToastProvider';
@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { CheckIcon, TargetIcon } from '@/components/ui/Icon';
 import { SessionHistory } from './SessionHistory';
+import { WeeklyChart } from './WeeklyChart';
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
@@ -19,7 +20,7 @@ function Metric({ label, value }: { label: string; value: string }) {
 }
 
 export function StatsPanel() {
-  const { stats, resetToday } = useStats();
+  const { stats, recentDays, totals, resetToday } = useStats();
   const { settings } = useSettings();
   const { notify } = useToast();
   const { t } = useI18n();
@@ -30,6 +31,11 @@ export function StatsPanel() {
   const ratio = goal > 0 ? Math.min(1, done / goal) : 0;
   const remaining = Math.max(0, goal - done);
   const reached = remaining === 0;
+
+  const week = useMemo(() => recentDays(7), [recentDays]);
+  const weekTotals = useMemo(() => totals(7), [totals]);
+  const monthTotals = useMemo(() => totals(30), [totals]);
+  const hasRange = monthTotals.sessions > 0;
 
   return (
     <section
@@ -65,7 +71,9 @@ export function StatsPanel() {
             )}
             {t('stats.goal')}
           </p>
-          <p className="tnum text-[13px] text-muted">{t('stats.goalProgress', { done, total: goal })}</p>
+          <p className="tnum text-[13px] text-muted">
+            {t('stats.goalProgress', { done, total: goal })}
+          </p>
         </div>
 
         <div
@@ -85,6 +93,56 @@ export function StatsPanel() {
         <p className="mt-2.5 text-[12.5px] text-faint">
           {reached ? t('stats.goalReached') : t('stats.goalRemaining', { count: remaining })}
         </p>
+      </div>
+
+      <div className="border-b border-border-base px-4 py-4">
+        <div className="flex items-baseline justify-between gap-3">
+          <h3 className="text-[12px] font-medium tracking-[0.1em] text-faint uppercase">
+            {t('stats.week')}
+          </h3>
+          {hasRange ? (
+            <p className="text-[12px] text-faint">
+              {t('stats.activeDays', { count: weekTotals.activeDays })}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="mt-3">
+          <WeeklyChart days={week} label={t('stats.chartLabel')} />
+        </div>
+
+        <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1 border-t border-border-base pt-3">
+          <div className="flex items-baseline justify-between gap-2">
+            <dt className="text-[12.5px] text-muted">{t('stats.weekTotal')}</dt>
+            <dd className="tnum text-[13px] font-medium">
+              {weekTotals.sessions}
+              <span className="ml-1 text-[11.5px] font-normal text-faint">
+                {t('stats.sessionsShort')}
+              </span>
+            </dd>
+          </div>
+          <div className="flex items-baseline justify-between gap-2">
+            <dt className="text-[12.5px] text-muted">{t('stats.monthTotal')}</dt>
+            <dd className="tnum text-[13px] font-medium">
+              {monthTotals.sessions}
+              <span className="ml-1 text-[11.5px] font-normal text-faint">
+                {t('stats.sessionsShort')}
+              </span>
+            </dd>
+          </div>
+          <div className="flex items-baseline justify-between gap-2">
+            <dt className="sr-only">{`${t('stats.weekTotal')} — ${t('stats.focusedTime')}`}</dt>
+            <dd className="tnum text-[12px] text-faint">
+              {formatDuration(weekTotals.focusedMs, t('stats.hour'), t('stats.minute'))}
+            </dd>
+          </div>
+          <div className="flex items-baseline justify-between gap-2">
+            <dt className="sr-only">{`${t('stats.monthTotal')} — ${t('stats.focusedTime')}`}</dt>
+            <dd className="tnum text-[12px] text-faint">
+              {formatDuration(monthTotals.focusedMs, t('stats.hour'), t('stats.minute'))}
+            </dd>
+          </div>
+        </dl>
       </div>
 
       <div>

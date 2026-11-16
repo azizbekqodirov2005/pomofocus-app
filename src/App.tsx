@@ -17,6 +17,7 @@ import { ShortcutsDialog } from '@/components/settings/ShortcutsDialog';
 import { Toaster } from '@/components/ui/Toaster';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { usePwaUpdate } from '@/hooks/usePwaUpdate';
 import { isStorageAvailable } from '@/lib/storage';
 import { formatClock } from '@/lib/time';
 import { cn } from '@/lib/cn';
@@ -118,6 +119,7 @@ function Workspace() {
   );
 
   useKeyboardShortcuts(handlers, !dialogOpen);
+  usePwaUpdate();
 
   // Tell the user once if persistence is impossible (private mode, blocked storage).
   useEffect(() => {

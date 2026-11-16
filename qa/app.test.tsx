@@ -77,9 +77,27 @@ class FakeAudioContext {
 g.AudioContext = FakeAudioContext;
 
 // Controlled clock: real timers still fire, but "now" is ours to move.
-const realNow = Date.now();
+const RealDate = Date;
+const realNow = RealDate.now();
 let offset = 0;
-Date.now = () => realNow + offset;
+
+class FakeDate extends RealDate {
+  constructor(...args: ConstructorParameters<typeof Date> | []) {
+    if (args.length === 0) {
+      super(RealDate.now() + offset);
+    } else {
+      // @ts-expect-error — forwarding the original overloads verbatim.
+      super(...args);
+    }
+  }
+  static override now(): number {
+    return RealDate.now() + offset;
+  }
+}
+
+globalThis.Date = FakeDate as unknown as DateConstructor;
+(dom.window as unknown as Record<string, unknown>).Date = FakeDate;
+
 const advance = (ms: number) => {
   offset += ms;
 };
@@ -284,7 +302,16 @@ await act(async () => {
   root2.render(<App />);
   await wait(320);
 });
-check(`remaining time survived remount (${beforeUnmount})`, clockText() === beforeUnmount, clockText());
+// Real time passes during the remount, so allow a one-second boundary slip.
+const toSeconds = (clock: string) => {
+  const [m, sec] = clock.split(':').map(Number);
+  return (m ?? 0) * 60 + (sec ?? 0);
+};
+check(
+  `remaining time survived remount (${beforeUnmount})`,
+  Math.abs(toSeconds(clockText()) - toSeconds(beforeUnmount)) <= 1,
+  clockText(),
+);
 
 console.log('\n11. A session that expired while the page was closed is completed on load');
 await act(async () => {
@@ -377,6 +404,94 @@ check('one break counted', cycleStats.completedBreaks === 1, String(cycleStats.c
 check('daily goal reached message', text().includes('Daily goal reached'));
 await runOut(3);
 check('cycle resets to focus after long break', clockText() === '01:00', clockText());
+
+console.log('\n14. A finished day is archived, so weekly totals survive the reset');
+await act(async () => {
+  root5.unmount();
+  await wait();
+});
+dom.window.localStorage.clear();
+dom.window.localStorage.setItem(
+  'fokus.settings',
+  JSON.stringify({
+    focusMinutes: 1,
+    shortBreakMinutes: 1,
+    longBreakMinutes: 3,
+    sessionsBeforeLongBreak: 4,
+    dailyGoal: 4,
+    soundEnabled: false,
+    notificationsEnabled: false,
+    autoStartBreaks: false,
+    autoStartFocus: false,
+  }),
+);
+dom.window.localStorage.setItem('fokus.language', '"en"');
+const root6 = createRoot(document.getElementById('root')!);
+await act(async () => {
+  root6.render(<App />);
+  await wait(320);
+});
+const start6 = Array.from(document.querySelectorAll('button')).find((b) =>
+  b.textContent?.includes('Start'),
+);
+await act(async () => {
+  start6!.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
+  await wait(200);
+});
+advance(60_000 + 500);
+await act(async () => {
+  await wait(400);
+});
+const dayOne = JSON.parse(dom.window.localStorage.getItem('fokus.stats') ?? '{}') as {
+  completedFocusSessions: number;
+  date: string;
+};
+check('session counted on day one', dayOne.completedFocusSessions === 1);
+
+// Jump to the next local day and let the tab notice.
+advance(24 * 60 * 60_000);
+await act(async () => {
+  document.dispatchEvent(new dom.window.Event('visibilitychange'));
+  await wait(400);
+});
+const archive = JSON.parse(dom.window.localStorage.getItem('fokus.archive') ?? '[]') as Array<{
+  date: string;
+  completedFocusSessions: number;
+}>;
+const dayTwo = JSON.parse(dom.window.localStorage.getItem('fokus.stats') ?? '{}') as {
+  completedFocusSessions: number;
+  date: string;
+};
+check('yesterday archived', archive.length === 1 && archive[0]?.completedFocusSessions === 1);
+check('archived under its own date', archive[0]?.date === dayOne.date);
+check('today starts clean', dayTwo.completedFocusSessions === 0 && dayTwo.date !== dayOne.date);
+check('new-day notice shown', text().includes('A new day started'));
+check('weekly section still reports the session', text().includes('Last 7 days'));
+
+// Clearing today must not erase the past week.
+await act(async () => {
+  const resetButton = Array.from(document.querySelectorAll('button')).find((b) =>
+    b.textContent?.includes('Reset statistics'),
+  );
+  resetButton?.dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
+  await wait();
+});
+const stillArchived = JSON.parse(dom.window.localStorage.getItem('fokus.archive') ?? '[]') as unknown[];
+check('archive survives a daily reset', stillArchived.length === 1);
+
+console.log('\n15. Corrupt archive data is ignored, not fatal');
+await act(async () => {
+  root6.unmount();
+  await wait();
+});
+dom.window.localStorage.setItem('fokus.archive', '[{"date":"nope"},null,42,{"date":"2026-01-02","completedFocusSessions":"x"}]');
+const root7 = createRoot(document.getElementById('root')!);
+await act(async () => {
+  root7.render(<App />);
+  await wait(320);
+});
+check('app renders with corrupt archive', clockText() === '01:00', clockText());
+check('bad records dropped', !text().includes('NaN'));
 
 console.log(`\n${failures === 0 ? 'ALL CHECKS PASSED' : `${failures} CHECK(S) FAILED`}\n`);
 process.exit(failures === 0 ? 0 : 1);

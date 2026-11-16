@@ -51,6 +51,15 @@ export interface HistoryEntry {
   taskTitle: string | null;
 }
 
+/** One finished day, kept so weekly and monthly totals survive the daily reset. */
+export interface DayRecord {
+  /** Local calendar day as YYYY-MM-DD. */
+  date: string;
+  completedFocusSessions: number;
+  focusedMs: number;
+  completedBreaks: number;
+}
+
 export interface DailyStats {
   /** Local calendar day as YYYY-MM-DD. */
   date: string;
@@ -62,8 +71,17 @@ export interface DailyStats {
 
 export type ToastVariant = 'info' | 'success' | 'danger';
 
+export interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+
 export interface Toast {
   id: string;
   message: string;
   variant: ToastVariant;
+  /** Optional button inside the toast, e.g. "Reload". */
+  action?: ToastAction;
+  /** A sticky toast waits for the user instead of timing out. */
+  persist?: boolean;
 }

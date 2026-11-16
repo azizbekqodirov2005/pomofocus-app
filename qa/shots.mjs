@@ -1,3 +1,8 @@
+/**
+ * Screenshot sweep across breakpoints and themes.
+ * Needs a local Chrome and `npm i --no-save puppeteer-core`, then:
+ *   npm run build && npx vite preview --port 4173 & node qa/shots.mjs
+ */
 import puppeteer from 'puppeteer-core';
 
 const browser = await puppeteer.launch({

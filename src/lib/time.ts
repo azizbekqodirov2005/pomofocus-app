@@ -40,6 +40,38 @@ export function msUntilNextLocalMidnight(from: Date = new Date()): number {
   return next.getTime() - from.getTime();
 }
 
+/** The last `count` local day keys, oldest first, ending with today. */
+export function recentDayKeys(count: number, from: Date = new Date()): string[] {
+  const keys: string[] = [];
+  for (let offset = count - 1; offset >= 0; offset -= 1) {
+    const day = new Date(from.getFullYear(), from.getMonth(), from.getDate() - offset);
+    keys.push(todayKey(day));
+  }
+  return keys;
+}
+
+/** Short weekday name for a YYYY-MM-DD key, localised. */
+export function weekdayLabel(dayKey: string, locale: string): string {
+  const [year, month, day] = dayKey.split('-').map(Number);
+  const date = new Date(year ?? 1970, (month ?? 1) - 1, day ?? 1);
+  try {
+    return new Intl.DateTimeFormat(locale, { weekday: 'short' }).format(date);
+  } catch {
+    return String(date.getDate());
+  }
+}
+
+/** Localised short date, e.g. "14 Nov". */
+export function shortDateLabel(dayKey: string, locale: string): string {
+  const [year, month, day] = dayKey.split('-').map(Number);
+  const date = new Date(year ?? 1970, (month ?? 1) - 1, day ?? 1);
+  try {
+    return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' }).format(date);
+  } catch {
+    return dayKey;
+  }
+}
+
 export function createId(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
     return crypto.randomUUID();

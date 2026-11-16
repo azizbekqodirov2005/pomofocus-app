@@ -34,6 +34,16 @@ no account, no server, no tracking.
 - Daily goal with progress visualisation
 - Session history for the current day
 - Automatic reset when a new **local** calendar day begins
+- **Last 7 days** chart plus 7- and 30-day totals: each finished day is archived
+  before the daily counters clear, so the weekly view survives the reset
+  (120 days are kept)
+
+### Installable (PWA)
+- Installs to the home screen or desktop with its own icon and standalone window
+- Works fully offline after the first visit — the app shell, fonts and icons are
+  precached by a service worker
+- Updates are never applied silently: a new version offers a Reload toast, so a
+  running session is never interrupted without the user's say-so
 
 ### Interface
 - Uzbek / English / Russian, switched instantly, remembered across reloads
@@ -62,8 +72,9 @@ no account, no server, no tracking.
 - **React 19** + **TypeScript** (strict, `noUncheckedIndexedAccess`, `noUnusedLocals`)
 - **Vite 7** for dev server and build
 - **Tailwind CSS 4** (CSS-first configuration with design tokens)
-- No state library, no UI kit, no icon package — the only runtime dependencies
-  are React and a self-hosted Inter font
+- **vite-plugin-pwa** (build time only) for the manifest and service worker
+- No state library, no UI kit, no icon package, no chart library — the only
+  runtime dependencies are React and a self-hosted Inter font
 
 ### Architecture
 
@@ -92,8 +103,8 @@ a missing or misspelled key is a compile error.
 ## Data storage
 
 Frontend only, by design — the feature set needs no server. Settings, theme,
-language, tasks, daily statistics, session history and timer state are kept in
-`localStorage` under the `fokus.` prefix. If storage is unavailable (private
+language, tasks, daily statistics, the day archive, session history and timer
+state are kept in `localStorage` under the `fokus.` prefix. If storage is unavailable (private
 mode, blocked cookies) the app still works and tells the user that nothing will
 be saved.
 
@@ -116,6 +127,18 @@ npm run dev          # http://localhost:5173
 | `npm run build` | Type-check and build to `dist/` |
 | `npm run preview` | Serve the production build locally |
 | `npm run typecheck` | TypeScript check only |
+| `npm test` | Integration suite (53 checks) in jsdom |
+
+### Tests
+
+`qa/app.test.tsx` drives the real component tree in jsdom against a controlled
+clock. It covers timer accuracy across a 60-second wall-clock jump, pausing,
+refresh recovery, a session that expired while the page was closed, auto-start
+cycles and long breaks, task counting, daily rollover and archiving, language
+and theme persistence, and recovery from corrupt storage.
+
+Screenshots across breakpoints and themes come from `qa/shots.mjs`, which needs
+a local Chrome plus `npm i --no-save puppeteer-core`.
 
 ## Deployment
 
@@ -151,6 +174,9 @@ Netlify, add a rewrite of all paths to `/index.html`.
   point `logoSrc` / `logoDarkSrc` in `src/config/brand.ts` at different files.
 - **Colours** — all design tokens are CSS custom properties at the top of
   `src/index.css`, grouped per theme and per session type.
+- **App icons** — replace `public/pwa-192.png`, `public/pwa-512.png`,
+  `public/pwa-maskable-512.png` and `public/apple-touch-icon.png`; the manifest
+  itself lives in `vite.config.ts`.
 - **Languages** — add a dictionary next to `src/i18n/uz.ts` and register it in
   `src/i18n/index.ts`. TypeScript will list any missing keys.
 

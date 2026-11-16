@@ -8,12 +8,18 @@ import {
   useEffect,
   type ReactNode,
 } from 'react';
-import type { Toast, ToastVariant } from '@/types';
+import type { Toast, ToastAction, ToastVariant } from '@/types';
 import { createId } from '@/lib/time';
+
+export interface NotifyOptions {
+  action?: ToastAction;
+  /** Keep the toast until the user dismisses it or uses its action. */
+  persist?: boolean;
+}
 
 interface ToastContextValue {
   toasts: Toast[];
-  notify: (message: string, variant?: ToastVariant) => void;
+  notify: (message: string, variant?: ToastVariant, options?: NotifyOptions) => void;
   dismiss: (id: string) => void;
 }
 
@@ -36,11 +42,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const notify = useCallback(
-    (message: string, variant: ToastVariant = 'info') => {
+    (message: string, variant: ToastVariant = 'info', options?: NotifyOptions) => {
       const id = createId();
-      setToasts((current) => [...current, { id, message, variant }].slice(-MAX_VISIBLE));
-      const handle = window.setTimeout(() => dismiss(id), VISIBLE_MS);
-      timers.current.set(id, handle);
+      const toast: Toast = {
+        id,
+        message,
+        variant,
+        ...(options?.action ? { action: options.action } : {}),
+        ...(options?.persist ? { persist: true } : {}),
+      };
+      setToasts((current) => [...current, toast].slice(-MAX_VISIBLE));
+      if (!options?.persist) {
+        const handle = window.setTimeout(() => dismiss(id), VISIBLE_MS);
+        timers.current.set(id, handle);
+      }
     },
     [dismiss],
   );

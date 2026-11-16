@@ -13,6 +13,7 @@ export const StorageKeys = {
   tasks: `${PREFIX}tasks`,
   activeTask: `${PREFIX}activeTask`,
   stats: `${PREFIX}stats`,
+  archive: `${PREFIX}archive`,
   timer: `${PREFIX}timer`,
   notificationsAsked: `${PREFIX}notificationsAsked`,
 } as const;

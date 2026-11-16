@@ -37,7 +37,21 @@ export function Toaster() {
                   : 'bg-accent',
             )}
           />
-          <p className="min-w-0 flex-1 text-[13px] leading-relaxed">{toast.message}</p>
+          <div className="min-w-0 flex-1">
+            <p className="text-[13px] leading-relaxed">{toast.message}</p>
+            {toast.action ? (
+              <button
+                type="button"
+                onClick={() => {
+                  toast.action?.onClick();
+                  dismiss(toast.id);
+                }}
+                className="mt-1.5 text-[13px] font-medium text-accent underline-offset-2 hover:underline"
+              >
+                {toast.action.label}
+              </button>
+            ) : null}
+          </div>
           <button
             type="button"
             onClick={() => dismiss(toast.id)}
