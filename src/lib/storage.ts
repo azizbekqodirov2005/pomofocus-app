@@ -16,6 +16,7 @@ export const StorageKeys = {
   archive: `${PREFIX}archive`,
   timer: `${PREFIX}timer`,
   notificationsAsked: `${PREFIX}notificationsAsked`,
+  installHintSeen: `${PREFIX}installHintSeen`,
 } as const;
 
 let available: boolean | null = null;

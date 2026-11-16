@@ -142,6 +142,14 @@ export const ListIcon = (props: IconProps) => (
   </Base>
 );
 
+export const InstallIcon = (props: IconProps) => (
+  <Base {...props}>
+    <path d="M12 3.5v11" />
+    <path d="M7.5 10.5 12 15l4.5-4.5" />
+    <path d="M4.5 16.5v2a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-2" />
+  </Base>
+);
+
 export const ChartIcon = (props: IconProps) => (
   <Base {...props}>
     <path d="M4 20V4" />

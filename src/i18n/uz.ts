@@ -9,6 +9,17 @@ export const uz = {
     tasks: 'Vazifalar',
     stats: 'Natija',
   },
+  install: {
+    button: 'Ilovani o‘rnatish',
+    title: 'Telefonga o‘rnatish',
+    intro: 'Safari’da bu ilovani bosh ekranga qo‘shsangiz, u alohida ilova kabi ochiladi.',
+    step1: 'Pastdagi “Ulashish” belgisini bosing (yuqoriga qaragan strelka).',
+    step2: 'Ro‘yxatni pastga aylantirib, “Bosh ekranga qo‘shish”ni tanlang.',
+    step3: 'O‘ng yuqoridagi “Qo‘shish”ni bosing.',
+    benefit: 'O‘rnatilgandan keyin ilova internetsiz ham ishlaydi va o‘z belgisi bilan ochiladi.',
+    done: 'Ilova o‘rnatildi',
+    hint: 'Bu ilovani telefoningizga o‘rnatsa bo‘ladi',
+  },
   session: {
     focus: 'Fokus',
     shortBreak: 'Qisqa tanaffus',

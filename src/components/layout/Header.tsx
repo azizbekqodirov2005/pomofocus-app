@@ -1,5 +1,5 @@
 import { IconButton } from '@/components/ui/IconButton';
-import { KeyboardIcon, MoonIcon, SettingsIcon, SunIcon } from '@/components/ui/Icon';
+import { InstallIcon, KeyboardIcon, MoonIcon, SettingsIcon, SunIcon } from '@/components/ui/Icon';
 import { useTheme } from '@/state/ThemeProvider';
 import { useI18n } from '@/i18n/useI18n';
 import { Brand } from './Brand';
@@ -8,9 +8,11 @@ import { LanguageSelect } from './LanguageSelect';
 interface HeaderProps {
   onOpenSettings: () => void;
   onOpenShortcuts: () => void;
+  /** Only set while the app can actually be installed on this device. */
+  onInstall?: (() => void) | undefined;
 }
 
-export function Header({ onOpenSettings, onOpenShortcuts }: HeaderProps) {
+export function Header({ onOpenSettings, onOpenShortcuts, onInstall }: HeaderProps) {
   const { resolved, toggle } = useTheme();
   const { t } = useI18n();
 
@@ -20,6 +22,15 @@ export function Header({ onOpenSettings, onOpenShortcuts }: HeaderProps) {
         <Brand name={t('app.name')} tagline={t('app.tagline')} />
 
         <nav aria-label={t('settings.title')} className="flex shrink-0 items-center gap-0.5">
+          {onInstall ? (
+            <IconButton
+              label={t('install.button')}
+              onClick={onInstall}
+              className="text-accent hover:bg-accent-tint hover:text-accent"
+            >
+              <InstallIcon />
+            </IconButton>
+          ) : null}
           <LanguageSelect />
           <IconButton
             label={resolved === 'dark' ? t('theme.toLight') : t('theme.toDark')}

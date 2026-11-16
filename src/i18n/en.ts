@@ -11,6 +11,17 @@ export const en: Dictionary = {
     tasks: 'Tasks',
     stats: 'Stats',
   },
+  install: {
+    button: 'Install app',
+    title: 'Install on your phone',
+    intro: 'Add the app to your home screen in Safari and it opens in its own window.',
+    step1: 'Tap the Share button at the bottom (the arrow pointing up).',
+    step2: 'Scroll down the list and choose “Add to Home Screen”.',
+    step3: 'Tap “Add” in the top right corner.',
+    benefit: 'Once installed the app works offline and opens with its own icon.',
+    done: 'App installed',
+    hint: 'You can install this app on your device',
+  },
   session: {
     focus: 'Focus',
     shortBreak: 'Short break',

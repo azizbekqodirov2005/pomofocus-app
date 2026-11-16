@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { I18nProvider } from '@/i18n/I18nProvider';
 import { useI18n } from '@/i18n/useI18n';
 import { ThemeProvider, useTheme } from '@/state/ThemeProvider';
@@ -18,7 +18,9 @@ import { Toaster } from '@/components/ui/Toaster';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { usePwaUpdate } from '@/hooks/usePwaUpdate';
-import { isStorageAvailable } from '@/lib/storage';
+import { useInstallPrompt } from '@/hooks/useInstallPrompt';
+import { InstallDialog } from '@/components/layout/InstallDialog';
+import { isStorageAvailable, readStorage, StorageKeys, writeStorage } from '@/lib/storage';
 import { formatClock } from '@/lib/time';
 import { cn } from '@/lib/cn';
 import { ChartIcon, ClockIcon, ListIcon } from '@/components/ui/Icon';
@@ -94,13 +96,16 @@ function Workspace() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [view, setView] = useState<MobileView>('timer');
+  const [installOpen, setInstallOpen] = useState(false);
 
   const { state, remainingMs, toggle, reset, skip } = useTimer();
   const { toggle: toggleTheme } = useTheme();
   const { notify } = useToast();
   const { t } = useI18n();
 
-  const dialogOpen = settingsOpen || shortcutsOpen;
+  const install = useInstallPrompt();
+  const installable = install.canPrompt || install.needsManualSteps;
+  const dialogOpen = settingsOpen || shortcutsOpen || installOpen;
 
   // In Uzbek the focus session and the product share a name, so "Fokus — Fokus"
   // would read as a mistake: collapse the two when they match.
@@ -127,6 +132,40 @@ function Workspace() {
   useKeyboardShortcuts(handlers, !dialogOpen);
   usePwaUpdate();
 
+  const startInstall = useCallback(async () => {
+    if (install.canPrompt) {
+      const outcome = await install.prompt();
+      if (outcome === 'accepted') notify(t('install.done'), 'success');
+      return;
+    }
+    setInstallOpen(true);
+  }, [install, notify, t]);
+
+  // Mention the install option once, then never again on this device.
+  // Only `installable` may retrigger this: anything else would cancel the
+  // pending timeout on an unrelated re-render.
+  const hintDeps = useRef({ notify, t, startInstall });
+  hintDeps.current = { notify, t, startInstall };
+
+  useEffect(() => {
+    if (!installable) return;
+    if (readStorage<boolean>(StorageKeys.installHintSeen, false)) return;
+    const handle = window.setTimeout(() => {
+      writeStorage(StorageKeys.installHintSeen, true);
+      const { notify: toast, t: translate, startInstall: begin } = hintDeps.current;
+      toast(translate('install.hint'), 'info', {
+        persist: true,
+        action: {
+          label: translate('install.button'),
+          onClick: () => {
+            void begin();
+          },
+        },
+      });
+    }, 2500);
+    return () => window.clearTimeout(handle);
+  }, [installable]);
+
   // Tell the user once if persistence is impossible (private mode, blocked storage).
   useEffect(() => {
     if (!isStorageAvailable()) notify(t('toast.storageUnavailable'), 'danger');
@@ -145,6 +184,13 @@ function Workspace() {
       <Header
         onOpenSettings={() => setSettingsOpen(true)}
         onOpenShortcuts={() => setShortcutsOpen(true)}
+        onInstall={
+          installable
+            ? () => {
+                void startInstall();
+              }
+            : undefined
+        }
       />
 
       <main id="main" className="mx-auto w-full max-w-5xl flex-1 px-4 pt-5 pb-12 sm:px-6 sm:pt-8">
@@ -171,6 +217,7 @@ function Workspace() {
 
       <SettingsDialog open={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <ShortcutsDialog open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
+      <InstallDialog open={installOpen} onClose={() => setInstallOpen(false)} />
     </div>
   );
 }
