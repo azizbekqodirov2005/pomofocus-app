@@ -146,8 +146,9 @@ Netlify, add a rewrite of all paths to `/index.html`.
 
 - **Durations, auto-start, goal, alerts** — in the app's settings dialog, with
   a restore-defaults option.
-- **Footer logo** — replace `public/logo.svg` with your own file, or point
-  `logoSrc` in `src/config/brand.ts` at a different file (PNG and SVG both work).
+- **Footer logo** — replace `public/logo.png` (dark mark, shown on the light
+  theme) and `public/logo-dark.png` (light mark, shown on the dark theme), or
+  point `logoSrc` / `logoDarkSrc` in `src/config/brand.ts` at different files.
 - **Colours** — all design tokens are CSS custom properties at the top of
   `src/index.css`, grouped per theme and per session type.
 - **Languages** — add a dictionary next to `src/i18n/uz.ts` and register it in

@@ -1,11 +1,13 @@
 /**
- * Brand details used in the footer.
- * Replace `logoSrc` with your own file in `public/` to change the logo —
- * no component changes needed.
+ * Footer brand details.
+ * Two logo files so the wordmark stays legible in both themes:
+ * `logoSrc` is the dark mark for light backgrounds, `logoDarkSrc` the light
+ * mark for dark backgrounds. Replace the files in `public/` to change the logo.
  */
 export const BRAND = {
-  name: 'Azizbek Qodirov',
-  role: 'Web developer',
+  name: 'AzbekDev',
+  tagline: 'Software Solutions',
   url: 'https://azbek.uz',
-  logoSrc: '/logo.svg',
+  logoSrc: './logo.png',
+  logoDarkSrc: './logo-dark.png',
 } as const;
